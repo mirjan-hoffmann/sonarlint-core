@@ -23,6 +23,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -32,15 +33,19 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.TestUtils;
+import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
 import org.sonarsource.sonarlint.core.client.api.common.Language;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class StandaloneNoPluginMediumTest {
 
@@ -54,6 +59,7 @@ public class StandaloneNoPluginMediumTest {
   public void prepare() throws IOException {
     LogOutput logOutput = (msg, level) -> logs.put(level, msg);
     sonarlint = new StandaloneSonarLintEngineImpl(StandaloneGlobalConfiguration.builder()
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
       .setLogOutput(logOutput).build());
 
     baseDir = temp.newFolder();

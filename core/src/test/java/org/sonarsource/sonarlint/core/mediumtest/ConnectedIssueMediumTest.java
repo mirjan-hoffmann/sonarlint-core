@@ -21,6 +21,7 @@ package org.sonarsource.sonarlint.core.mediumtest;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,7 +38,9 @@ import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.ConnectedSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.NodeJsHelper;
 import org.sonarsource.sonarlint.core.TestUtils;
+import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
 import org.sonarsource.sonarlint.core.client.api.common.Language;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
@@ -55,10 +58,12 @@ import org.sonarsource.sonarlint.core.proto.Sonarlint.StorageStatus;
 import org.sonarsource.sonarlint.core.util.PluginLocator;
 import org.sonarsource.sonarlint.core.util.VersionUtils;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.sonarsource.sonarlint.core.TestUtils.createNoOpIssueListener;
 import static org.sonarsource.sonarlint.core.TestUtils.createNoOpLogOutput;
 import static org.sonarsource.sonarlint.core.container.storage.StoragePaths.encodeForFs;
@@ -122,6 +127,7 @@ public class ConnectedIssueMediumTest {
       .setLogOutput(createNoOpLogOutput())
       .addEnabledLanguages(Language.JAVA, Language.JS)
       .setNodeJs(nodeJsHelper.getNodeJsPath(), nodeJsHelper.getNodeJsVersion())
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
       .build();
     sonarlint = new ConnectedSonarLintEngineImpl(config);
 

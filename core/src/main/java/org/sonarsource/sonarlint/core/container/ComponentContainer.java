@@ -42,6 +42,10 @@ import org.sonarsource.sonarlint.core.plugin.PluginInfo;
 
 public class ComponentContainer implements ContainerPopulator.Container {
 
+  public <T> void createChildModule(T module) {
+
+  }
+
   private static final class ExtendedDefaultPicoContainer extends DefaultPicoContainer {
     private ExtendedDefaultPicoContainer(ComponentFactory componentFactory, LifecycleStrategy lifecycleStrategy, PicoContainer parent) {
       super(componentFactory, lifecycleStrategy, parent);

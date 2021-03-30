@@ -17,23 +17,20 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.client.api.common;
+package org.sonarsource.sonarlint.core.container.module;
 
-import java.util.Collection;
+import org.sonarsource.api.sonarlint.SonarLintSide;
+import org.sonarsource.sonarlint.core.container.ComponentContainer;
+import org.sonarsource.sonarlint.core.container.global.ExtensionInstaller;
 
-/**
- * Entry point for SonarLint.
- */
-public interface SonarLintEngine {
+public class ModuleContainer extends ComponentContainer {
 
-  /**
-   * Get information about the analyzers that are currently loaded.
-   * Should only be called when engine is started.
-   */
-  Collection<PluginDetails> getPluginDetails();
+  public ModuleContainer(ComponentContainer parent) {
+    super(parent);
+  }
 
-  void moduleAdded(ModuleInfo module);
-
-  void moduleDeleted(ModuleInfo module);
-
+  @Override
+  protected void doBeforeStart() {
+    getComponentByType(ExtensionInstaller.class).install(this, SonarLintSide.Scope.MODULE);
+  }
 }

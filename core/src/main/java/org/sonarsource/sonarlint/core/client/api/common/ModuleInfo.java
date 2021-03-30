@@ -19,21 +19,28 @@
  */
 package org.sonarsource.sonarlint.core.client.api.common;
 
-import java.util.Collection;
+import java.net.URI;
 
-/**
- * Entry point for SonarLint.
- */
-public interface SonarLintEngine {
+public class ModuleInfo<K> {
+  private final K key;
+  private final URI path;
+  private final ClientFileWalker clientFileWalker;
 
-  /**
-   * Get information about the analyzers that are currently loaded.
-   * Should only be called when engine is started.
-   */
-  Collection<PluginDetails> getPluginDetails();
+  public ModuleInfo(K key, URI path, ClientFileWalker clientFileWalker) {
+    this.key = key;
+    this.path = path;
+    this.clientFileWalker = clientFileWalker;
+  }
 
-  void moduleAdded(ModuleInfo module);
+  public K key() {
+    return key;
+  }
 
-  void moduleDeleted(ModuleInfo module);
+  public URI path() {
+    return path;
+  }
 
+  public ClientFileWalker fileWalker() {
+    return clientFileWalker;
+  }
 }

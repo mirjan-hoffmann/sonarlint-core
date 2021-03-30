@@ -24,6 +24,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -32,14 +33,18 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.TestUtils;
+import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneSonarLintEngine;
 import org.sonarsource.sonarlint.core.util.PluginLocator;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.sonarsource.sonarlint.core.TestUtils.createNoOpIssueListener;
 
 public class LogMediumTest {
@@ -63,6 +68,7 @@ public class LogMediumTest {
     config = StandaloneGlobalConfiguration.builder()
       .addPlugin(PluginLocator.getJavaScriptPluginUrl())
       .setLogOutput(createLogOutput(logs))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
       .build();
     sonarlint = new StandaloneSonarLintEngineImpl(config);
 
@@ -87,6 +93,7 @@ public class LogMediumTest {
     return StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
+      .setModuleKey("key")
       .build();
   }
 

@@ -36,6 +36,7 @@ public abstract class AbstractAnalysisConfiguration {
   private final Iterable<ClientInputFile> inputFiles;
   private final Map<String, String> extraProperties;
   private final Path baseDir;
+  private final Object moduleKey;
   private final ClientFileWalker clientFileWalker;
 
   protected AbstractAnalysisConfiguration(AbstractBuilder<?> builder) {
@@ -43,6 +44,7 @@ public abstract class AbstractAnalysisConfiguration {
     this.inputFiles = builder.inputFiles;
     this.extraProperties = builder.extraProperties;
     this.clientFileWalker = builder.clientFileWalker;
+    this.moduleKey = builder.moduleKey;
   }
 
   public Map<String, String> extraProperties() {
@@ -51,6 +53,10 @@ public abstract class AbstractAnalysisConfiguration {
 
   public Path baseDir() {
     return baseDir;
+  }
+
+  public Object moduleKey() {
+    return moduleKey;
   }
 
   public ClientFileWalker clientFileWalker() {
@@ -64,6 +70,7 @@ public abstract class AbstractAnalysisConfiguration {
   protected void generateToStringCommon(StringBuilder sb) {
     sb.append("  baseDir: ").append(baseDir()).append("\n");
     sb.append("  extraProperties: ").append(extraProperties()).append("\n");
+    sb.append("  module: ").append(moduleKey()).append("\n");
   }
 
   protected void generateToStringInputFiles(StringBuilder sb) {
@@ -89,10 +96,11 @@ public abstract class AbstractAnalysisConfiguration {
   }
 
   public abstract static class AbstractBuilder<G extends AbstractBuilder<G>> {
-    private ClientFileWalker clientFileWalker;
     private List<ClientInputFile> inputFiles = new ArrayList<>();
     private Map<String, String> extraProperties = new HashMap<>();
     private Path baseDir;
+    private ClientFileWalker clientFileWalker;
+    private Object moduleKey;
 
     public G addInputFiles(ClientInputFile... inputFiles) {
       Collections.addAll(this.inputFiles, inputFiles);
@@ -126,6 +134,11 @@ public abstract class AbstractAnalysisConfiguration {
 
     public G setClientFileWalker(ClientFileWalker clientFileWalker) {
       this.clientFileWalker = clientFileWalker;
+      return (G) this;
+    }
+
+    public G setModuleKey(Object moduleKey) {
+      this.moduleKey = moduleKey;
       return (G) this;
     }
   }

@@ -19,6 +19,7 @@
  */
 package org.sonarsource.sonarlint.core.container.global;
 
+import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.core.container.ComponentContainer;
 
 /**
@@ -32,7 +33,7 @@ public class GlobalExtensionContainer extends ComponentContainer {
 
   @Override
   protected void doBeforeStart() {
-    getComponentByType(ExtensionInstaller.class).install(this, true);
+    getComponentByType(ExtensionInstaller.class).install(this, SonarLintSide.Scope.INSTANCE);
   }
 
 }

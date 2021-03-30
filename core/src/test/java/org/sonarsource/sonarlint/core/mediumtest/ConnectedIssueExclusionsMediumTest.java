@@ -22,6 +22,7 @@ package org.sonarsource.sonarlint.core.mediumtest;
 import com.google.common.collect.ImmutableMap;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +40,9 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonarsource.sonarlint.core.ConnectedSonarLintEngineImpl;
 import org.sonarsource.sonarlint.core.TestUtils;
+import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
 import org.sonarsource.sonarlint.core.client.api.common.Language;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.ClientInputFile;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.Issue;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.IssueListener;
@@ -57,8 +60,10 @@ import org.sonarsource.sonarlint.core.proto.Sonarlint.StorageStatus;
 import org.sonarsource.sonarlint.core.util.PluginLocator;
 import org.sonarsource.sonarlint.core.util.VersionUtils;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.Mockito.mock;
 import static org.sonarsource.sonarlint.core.TestUtils.createNoOpLogOutput;
 import static org.sonarsource.sonarlint.core.container.storage.StoragePaths.encodeForFs;
 
@@ -113,6 +118,7 @@ public class ConnectedIssueExclusionsMediumTest {
       .setStorageRoot(tmpStorage)
       .setLogOutput(createNoOpLogOutput())
       .addEnabledLanguage(Language.JAVA)
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
       .build();
     sonarlint = new ConnectedSonarLintEngineImpl(config);
     storagePaths = sonarlint.getGlobalContainer().getComponentByType(StoragePaths.class);

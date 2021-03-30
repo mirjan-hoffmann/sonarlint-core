@@ -48,7 +48,7 @@ public class ExtensionInstaller {
   private final Set<Language> enabledLanguages;
 
   public ExtensionInstaller(SonarRuntime sonarRuntime, PluginRepository pluginRepository, Configuration bootConfiguration, PluginVersionChecker pluginVersionChecker,
-    AbstractGlobalConfiguration globalConfig) {
+                            AbstractGlobalConfiguration globalConfig) {
     this.sonarRuntime = sonarRuntime;
     this.pluginRepository = pluginRepository;
     this.bootConfiguration = bootConfiguration;
@@ -56,16 +56,16 @@ public class ExtensionInstaller {
     this.enabledLanguages = globalConfig.getEnabledLanguages();
   }
 
-  public ExtensionInstaller installEmbeddedOnly(ComponentContainer container, boolean global) {
-    Collection<PluginInfo> pluginInfos = pluginRepository.getActivePluginInfos().stream().filter(p -> p.isEmbedded()).collect(Collectors.toList());
-    return install(container, global, pluginInfos);
+  public ExtensionInstaller installEmbeddedOnly(ComponentContainer container, SonarLintSide.Scope scope) {
+    Collection<PluginInfo> pluginInfos = pluginRepository.getActivePluginInfos().stream().filter(PluginInfo::isEmbedded).collect(Collectors.toList());
+    return install(container, scope, pluginInfos);
   }
 
-  public ExtensionInstaller install(ComponentContainer container, boolean global) {
-    return install(container, global, pluginRepository.getActivePluginInfos());
+  public ExtensionInstaller install(ComponentContainer container, SonarLintSide.Scope scope) {
+    return install(container, scope, pluginRepository.getActivePluginInfos());
   }
 
-  private ExtensionInstaller install(ComponentContainer container, boolean global, Collection<PluginInfo> pluginInfos) {
+  private ExtensionInstaller install(ComponentContainer container, SonarLintSide.Scope scope, Collection<PluginInfo> pluginInfos) {
     for (PluginInfo pluginInfo : pluginInfos) {
       Plugin plugin = pluginRepository.getPluginInstance(pluginInfo.getKey());
       Plugin.Context context = new PluginContextImpl.Builder()
@@ -73,15 +73,15 @@ public class ExtensionInstaller {
         .setBootConfiguration(bootConfiguration)
         .build();
       plugin.define(context);
-      loadExtensions(container, pluginInfo, context, global);
+      loadExtensions(container, pluginInfo, context, scope);
     }
     return this;
   }
 
-  private void loadExtensions(ComponentContainer container, PluginInfo pluginInfo, Plugin.Context context, boolean global) {
+  private void loadExtensions(ComponentContainer container, PluginInfo pluginInfo, Plugin.Context context, SonarLintSide.Scope scope) {
     Boolean isSlPluginOrNull = pluginInfo.isSonarLintSupported();
     boolean isExplicitlySonarLintCompatible = isSlPluginOrNull != null && isSlPluginOrNull.booleanValue();
-    if (global && !isExplicitlySonarLintCompatible) {
+    if (scope == SonarLintSide.Scope.INSTANCE && !isExplicitlySonarLintCompatible) {
       // Don't support global extensions for old plugins
       return;
     }
@@ -89,7 +89,7 @@ public class ExtensionInstaller {
       if (isExplicitlySonarLintCompatible) {
         // When plugin itself claim to be compatible with SonarLint, only load @SonarLintSide extensions
         // filter out non officially supported Sensors
-        if (isSonarLintSide(extension) && (isGlobal(extension) == global) && onlySonarSourceSensor(pluginInfo, extension)) {
+        if (isSonarLintSide(extension) && (getScope(extension) == scope) && onlySonarSourceSensor(pluginInfo, extension)) {
           container.addExtension(pluginInfo, extension);
         }
       } else {
@@ -112,11 +112,17 @@ public class ExtensionInstaller {
   }
 
   /**
-   * Experimental. Used by SonarTS
+   * Experimental. Used by SonarTS and SonarPython
    */
-  private static boolean isGlobal(Object extension) {
+  private static SonarLintSide.Scope getScope(Object extension) {
     SonarLintSide annotation = AnnotationUtils.getAnnotation(extension, SonarLintSide.class);
-    return annotation != null && SonarLintSide.MULTIPLE_ANALYSES.equals(annotation.lifespan());
+    if (annotation == null) {
+      return null;
+    }
+    if (SonarLintSide.MULTIPLE_ANALYSES.equals(annotation.lifespan())) {
+      return SonarLintSide.Scope.INSTANCE;
+    }
+    return annotation.scope();
   }
 
   private static boolean isNotSensor(Object extension) {
@@ -126,5 +132,4 @@ public class ExtensionInstaller {
   private static String className(Object extension) {
     return extension instanceof Class ? ((Class) extension).getName() : extension.getClass().getName();
   }
-
 }

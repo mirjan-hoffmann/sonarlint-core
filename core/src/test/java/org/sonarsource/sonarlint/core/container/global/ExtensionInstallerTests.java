@@ -75,7 +75,7 @@ class ExtensionInstallerTests {
     pluginInfo.setSonarLintSupported(true);
     when(pluginRepository.getActivePluginInfos()).thenReturn(singletonList(pluginInfo));
     when(pluginRepository.getPluginInstance("foo")).thenReturn(new FakePlugin());
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container).addExtension(pluginInfo, FakeComponent.class);
   }
@@ -88,7 +88,7 @@ class ExtensionInstallerTests {
 
     when(pluginRepository.getActivePluginInfos()).thenReturn(singletonList(pluginInfo));
     when(pluginRepository.getPluginInstance("foo")).thenReturn(new FakePlugin());
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container).addExtension(pluginInfo, FakeSensor.class);
   }
@@ -101,7 +101,7 @@ class ExtensionInstallerTests {
 
     when(pluginRepository.getActivePluginInfos()).thenReturn(singletonList(pluginInfo));
     when(pluginRepository.getPluginInstance("foo")).thenReturn(new FakePlugin());
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container, never()).addExtension(pluginInfo, FakeSensor.class);
   }
@@ -118,7 +118,7 @@ class ExtensionInstallerTests {
     underTest = new ExtensionInstaller(RUNTIME, pluginRepository, CONFIG, pluginVersionChecker, ConnectedGlobalConfiguration.builder()
       .addEnabledLanguage(Language.TS).build());
 
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container).addExtension(pluginInfo, TypeScriptSensor.class);
   }
@@ -135,7 +135,7 @@ class ExtensionInstallerTests {
     underTest = new ExtensionInstaller(RUNTIME, pluginRepository, CONFIG, pluginVersionChecker, ConnectedGlobalConfiguration.builder()
       .addEnabledLanguage(Language.JS).build());
 
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container, never()).addExtension(pluginInfo, TypeScriptSensor.class);
 
@@ -154,7 +154,7 @@ class ExtensionInstallerTests {
     underTest = new ExtensionInstaller(RUNTIME, pluginRepository, CONFIG, pluginVersionChecker, StandaloneGlobalConfiguration.builder()
       .addEnabledLanguage(Language.TS).build());
 
-    underTest.install(container, false);
+    underTest.install(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container).addExtension(pluginInfo, TypeScriptSensor.class);
   }
@@ -175,7 +175,7 @@ class ExtensionInstallerTests {
 
     underTest = new ExtensionInstaller(RUNTIME, pluginRepository, CONFIG, pluginVersionChecker, ConnectedGlobalConfiguration.builder().build());
 
-    underTest.installEmbeddedOnly(container, false);
+    underTest.installEmbeddedOnly(container, SonarLintSide.Scope.ANALYSIS);
 
     verify(container).addExtension(pluginInfoEmbedded, FakeComponent.class);
     verifyNoMoreInteractions(container);

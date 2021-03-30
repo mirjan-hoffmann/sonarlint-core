@@ -19,21 +19,8 @@
  */
 package org.sonarsource.sonarlint.core.client.api.common;
 
-import java.util.Collection;
+import java.util.List;
 
-/**
- * Entry point for SonarLint.
- */
-public interface SonarLintEngine {
-
-  /**
-   * Get information about the analyzers that are currently loaded.
-   * Should only be called when engine is started.
-   */
-  Collection<PluginDetails> getPluginDetails();
-
-  void moduleAdded(ModuleInfo module);
-
-  void moduleDeleted(ModuleInfo module);
-
+public interface ModulesProvider<K> {
+  List<ModuleInfo<K>> getModules();
 }

@@ -32,6 +32,7 @@ import javax.annotation.Nullable;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.sonarlint.core.client.api.common.LogOutput;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.PluginDetails;
 import org.sonarsource.sonarlint.core.client.api.common.ProgressMonitor;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
@@ -70,7 +71,7 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
   private final ReadWriteLock rwl = new ReentrantReadWriteLock();
   private final List<StateListener> stateListeners = new CopyOnWriteArrayList<>();
   private volatile State state = State.UNKNOWN;
-  private LogOutput logOutput = null;
+  private LogOutput logOutput;
 
   public ConnectedSonarLintEngineImpl(ConnectedGlobalConfiguration globalConfig) {
     this.globalConfig = globalConfig;
@@ -150,7 +151,7 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
     return withReadLock(() -> {
       try {
         setLogging(logOutput);
-        return getHandler().analyze(storageContainer.getGlobalExtensionContainer(), configuration, issueListener, new ProgressWrapper(monitor));
+        return getHandler().analyze(storageContainer.getModuleContainers().getContainerFor(configuration.moduleKey()), configuration, issueListener, new ProgressWrapper(monitor));
       } catch (RuntimeException e) {
         throw SonarLintWrappedException.wrap(e);
       }
@@ -193,6 +194,20 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
   @Override
   public Collection<PluginDetails> getPluginDetails() {
     return withReadLock(() -> getHandler().getPluginDetails());
+  }
+
+  @Override
+  public void moduleAdded(ModuleInfo module) {
+    if (getGlobalContainer() != null) {
+      getGlobalContainer().getModuleContainers().createContainer(module);
+    }
+  }
+
+  @Override
+  public void moduleDeleted(ModuleInfo module) {
+    if (getGlobalContainer() != null) {
+      getGlobalContainer().getModuleContainers().stopContainer(module);
+    }
   }
 
   @Override

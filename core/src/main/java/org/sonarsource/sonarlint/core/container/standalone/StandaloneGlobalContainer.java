@@ -31,6 +31,8 @@ import org.sonar.api.batch.rule.Rules;
 import org.sonar.api.utils.System2;
 import org.sonar.api.utils.UriReader;
 import org.sonar.api.utils.Version;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.sonarlint.core.NodeJsHelper;
 import org.sonarsource.sonarlint.core.analyzer.sensor.SensorsExecutor;
 import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
@@ -52,8 +54,10 @@ import org.sonarsource.sonarlint.core.container.global.GlobalTempFolderProvider;
 import org.sonarsource.sonarlint.core.container.global.MetadataLoader;
 import org.sonarsource.sonarlint.core.container.global.SonarLintRuntimeImpl;
 import org.sonarsource.sonarlint.core.container.model.DefaultAnalysisResult;
+import org.sonarsource.sonarlint.core.container.module.ModuleContainers;
 import org.sonarsource.sonarlint.core.container.standalone.rule.StandaloneActiveRules;
 import org.sonarsource.sonarlint.core.container.standalone.rule.StandaloneRuleRepositoryContainer;
+import org.sonarsource.sonarlint.core.container.storage.StorageContainer;
 import org.sonarsource.sonarlint.core.plugin.DefaultPluginJarExploder;
 import org.sonarsource.sonarlint.core.plugin.PluginClassloaderFactory;
 import org.sonarsource.sonarlint.core.plugin.PluginInfo;
@@ -64,10 +68,12 @@ import org.sonarsource.sonarlint.core.plugin.cache.PluginCacheProvider;
 import org.sonarsource.sonarlint.core.util.ProgressWrapper;
 
 public class StandaloneGlobalContainer extends ComponentContainer {
+  private static final Logger LOG = Loggers.get(StandaloneGlobalContainer.class);
 
   private Rules rules;
   private StandaloneActiveRules standaloneActiveRules;
   private GlobalExtensionContainer globalExtensionContainer;
+  private ModuleContainers moduleContainers;
 
   public static StandaloneGlobalContainer create(StandaloneGlobalConfiguration globalConfig) {
     StandaloneGlobalContainer container = new StandaloneGlobalContainer();
@@ -105,12 +111,17 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     installPlugins();
     loadRulesAndActiveRulesFromPlugins();
     globalExtensionContainer = new GlobalExtensionContainer(this);
+    StandaloneGlobalConfiguration globalConfiguration = this.getComponentByType(StandaloneGlobalConfiguration.class);
     globalExtensionContainer.startComponents();
+    this.moduleContainers = new ModuleContainers(globalExtensionContainer, globalConfiguration.getModulesProvider());
   }
 
   @Override
   public ComponentContainer stopComponents(boolean swallowException) {
     try {
+      if (moduleContainers != null) {
+        moduleContainers.stopAll();
+      }
       if (globalExtensionContainer != null) {
         globalExtensionContainer.stopComponents(swallowException);
       }
@@ -136,7 +147,11 @@ public class StandaloneGlobalContainer extends ComponentContainer {
   }
 
   public AnalysisResults analyze(StandaloneAnalysisConfiguration configuration, IssueListener issueListener, ProgressWrapper progress) {
-    AnalysisContainer analysisContainer = new AnalysisContainer(globalExtensionContainer, progress);
+    Object moduleKey = configuration.moduleKey();
+    LOG.info("Getting module container for key=" + moduleKey);
+    ComponentContainer container = moduleContainers.getContainerFor(moduleKey);
+    LOG.info("Container is " + container);
+    AnalysisContainer analysisContainer = new AnalysisContainer(container, progress);
     analysisContainer.add(configuration);
     ClientFileWalker clientFileWalker = configuration.clientFileWalker();
     if (clientFileWalker != null) {
@@ -177,4 +192,7 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     return standaloneActiveRules.allRuleDetails();
   }
 
+  public ModuleContainers getModuleContainers() {
+    return moduleContainers;
+  }
 }

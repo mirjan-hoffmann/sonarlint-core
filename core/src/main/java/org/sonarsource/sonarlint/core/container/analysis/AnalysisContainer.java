@@ -24,6 +24,7 @@ import org.sonar.api.resources.Languages;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.core.analyzer.issue.IssueFilters;
 import org.sonarsource.sonarlint.core.analyzer.noop.NoOpFileLinesContextFactory;
 import org.sonarsource.sonarlint.core.analyzer.noop.NoOpTestPlanBuilder;
@@ -122,7 +123,7 @@ public class AnalysisContainer extends ComponentContainer {
   }
 
   private void addPluginExtensions() {
-    getComponentByType(ExtensionInstaller.class).install(this, false);
+    getComponentByType(ExtensionInstaller.class).install(this, SonarLintSide.Scope.ANALYSIS);
   }
 
   @Override
