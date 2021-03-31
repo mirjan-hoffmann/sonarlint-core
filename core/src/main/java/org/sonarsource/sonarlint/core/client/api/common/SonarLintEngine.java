@@ -34,6 +34,6 @@ public interface SonarLintEngine {
 
   void moduleAdded(ModuleInfo module);
 
-  void moduleDeleted(ModuleInfo module);
+  void moduleDeleted(Object moduleKey);
 
 }

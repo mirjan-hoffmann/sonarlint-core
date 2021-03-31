@@ -19,25 +19,17 @@
  */
 package org.sonarsource.sonarlint.core.client.api.common;
 
-import java.net.URI;
-
 public class ModuleInfo<K> {
   private final K key;
-  private final URI path;
   private final ClientFileWalker clientFileWalker;
 
-  public ModuleInfo(K key, URI path, ClientFileWalker clientFileWalker) {
+  public ModuleInfo(K key, ClientFileWalker clientFileWalker) {
     this.key = key;
-    this.path = path;
     this.clientFileWalker = clientFileWalker;
   }
 
   public K key() {
     return key;
-  }
-
-  public URI path() {
-    return path;
   }
 
   public ClientFileWalker fileWalker() {

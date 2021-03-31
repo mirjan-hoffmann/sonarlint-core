@@ -17,20 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.container.analysis;
+package org.sonarsource.sonarlint.core.container.module;
 
 import java.util.function.Consumer;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.scanner.fs.ProjectFileWalker;
 import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
-import org.sonarsource.sonarlint.core.container.analysis.filesystem.InputFileBuilder;
 
 public class SonarLintFileWalker implements ProjectFileWalker {
 
   private final ClientFileWalker clientFileWalker;
-  private final InputFileBuilder inputFileBuilder;
+  private final ModuleInputFileBuilder inputFileBuilder;
 
-  public SonarLintFileWalker(ClientFileWalker clientFileWalker, InputFileBuilder inputFileBuilder) {
+  public SonarLintFileWalker(ClientFileWalker clientFileWalker, ModuleInputFileBuilder inputFileBuilder) {
     this.clientFileWalker = clientFileWalker;
     this.inputFileBuilder = inputFileBuilder;
   }

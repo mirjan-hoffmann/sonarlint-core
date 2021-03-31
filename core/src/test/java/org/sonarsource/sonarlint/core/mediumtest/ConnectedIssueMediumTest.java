@@ -127,7 +127,7 @@ public class ConnectedIssueMediumTest {
       .setLogOutput(createNoOpLogOutput())
       .addEnabledLanguages(Language.JAVA, Language.JS)
       .setNodeJs(nodeJsHelper.getNodeJsPath(), nodeJsHelper.getNodeJsVersion())
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .build();
     sonarlint = new ConnectedSonarLintEngineImpl(config);
 
@@ -178,6 +178,7 @@ public class ConnectedIssueMediumTest {
     ConnectedAnalysisConfiguration config = ConnectedAnalysisConfiguration.builder()
       .setProjectKey("stale_module")
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .build();
 
     try {
@@ -215,6 +216,7 @@ public class ConnectedIssueMediumTest {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(ConnectedAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(),
       new StoreIssueListener(issues), (m, l) -> System.out.println(m), null);
@@ -229,6 +231,7 @@ public class ConnectedIssueMediumTest {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(ConnectedAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(),
       new StoreIssueListener(issues), null, null);
@@ -246,6 +249,7 @@ public class ConnectedIssueMediumTest {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(ConnectedAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(),
       new StoreIssueListener(issues), null, null);
@@ -264,6 +268,7 @@ public class ConnectedIssueMediumTest {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(ConnectedAnalysisConfiguration.builder()
       .setProjectKey(JAVA_MODULE_KEY)
+      .setModuleKey("key")
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
       .build(),
@@ -303,6 +308,7 @@ public class ConnectedIssueMediumTest {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(ConnectedAnalysisConfiguration.builder()
       .setProjectKey("test-project")
+      .setModuleKey("key")
       .setBaseDir(baseDir.toPath())
       .addInputFile(inputFile)
       .build(),

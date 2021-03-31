@@ -41,7 +41,7 @@ public class ModuleContainers {
     }
   }
 
-  public void createContainer(ModuleInfo module) {
+  public ModuleContainer createContainer(ModuleInfo module) {
     if (modules.containsKey(module.key())) {
       // can this happen ?
       LOG.info("Module container already started with key=" + module.key());
@@ -54,14 +54,15 @@ public class ModuleContainers {
     }
     moduleContainer.startComponents();
     modules.put(module.key(), moduleContainer);
+    return moduleContainer;
   }
 
-  public void stopContainer(ModuleInfo module) {
-    if (!modules.containsKey(module.key())) {
+  public void stopContainer(Object moduleKey) {
+    if (!modules.containsKey(moduleKey)) {
       // can this happen ?
       return;
     }
-    ModuleContainer moduleContainer = modules.remove(module.key());
+    ModuleContainer moduleContainer = modules.remove(moduleKey);
     moduleContainer.stopComponents();
   }
 
@@ -71,11 +72,6 @@ public class ModuleContainers {
   }
 
   public ComponentContainer getContainerFor(Object moduleKey) {
-    ModuleContainer moduleContainer = modules.get(moduleKey);
-    if (moduleContainer == null) {
-      // XXX can we have no module at all ?
-      return parent;
-    }
-    return moduleContainer;
+    return modules.get(moduleKey);
   }
 }

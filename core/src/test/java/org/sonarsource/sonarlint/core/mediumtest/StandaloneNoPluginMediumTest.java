@@ -59,7 +59,7 @@ public class StandaloneNoPluginMediumTest {
   public void prepare() throws IOException {
     LogOutput logOutput = (msg, level) -> logs.put(level, msg);
     sonarlint = new StandaloneSonarLintEngineImpl(StandaloneGlobalConfiguration.builder()
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .setLogOutput(logOutput).build());
 
     baseDir = temp.newFolder();
@@ -80,6 +80,7 @@ public class StandaloneNoPluginMediumTest {
     AnalysisResults results = sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       i -> {

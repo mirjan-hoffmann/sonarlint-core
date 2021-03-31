@@ -96,7 +96,6 @@ public class AnalysisContainer extends ComponentContainer {
       LanguageDetection.class,
       FileIndexer.class,
       SonarLintFileSystem.class,
-      SonarLintFileWalker.class,
 
       // Exclusions in connected mode
       ServerConfigurationProvider.class,

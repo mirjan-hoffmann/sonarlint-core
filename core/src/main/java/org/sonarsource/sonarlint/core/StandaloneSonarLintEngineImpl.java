@@ -140,9 +140,9 @@ public final class StandaloneSonarLintEngineImpl implements StandaloneSonarLintE
   }
 
   @Override
-  public void moduleDeleted(ModuleInfo module) {
+  public void moduleDeleted(Object moduleKey) {
     if (getGlobalContainer() != null) {
-      getGlobalContainer().getModuleContainers().stopContainer(module);
+      getGlobalContainer().getModuleContainers().stopContainer(moduleKey);
     }
   }
 

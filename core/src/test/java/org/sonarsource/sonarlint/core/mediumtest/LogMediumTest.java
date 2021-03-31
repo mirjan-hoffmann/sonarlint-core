@@ -68,7 +68,7 @@ public class LogMediumTest {
     config = StandaloneGlobalConfiguration.builder()
       .addPlugin(PluginLocator.getJavaScriptPluginUrl())
       .setLogOutput(createLogOutput(logs))
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .build();
     sonarlint = new StandaloneSonarLintEngineImpl(config);
 

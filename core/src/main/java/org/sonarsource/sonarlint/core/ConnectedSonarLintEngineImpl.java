@@ -52,6 +52,7 @@ import org.sonarsource.sonarlint.core.client.api.connected.UpdateResult;
 import org.sonarsource.sonarlint.core.client.api.exceptions.GlobalStorageUpdateRequiredException;
 import org.sonarsource.sonarlint.core.client.api.exceptions.SonarLintWrappedException;
 import org.sonarsource.sonarlint.core.client.api.exceptions.StorageException;
+import org.sonarsource.sonarlint.core.container.ComponentContainer;
 import org.sonarsource.sonarlint.core.container.connected.ConnectedContainer;
 import org.sonarsource.sonarlint.core.container.storage.StorageContainer;
 import org.sonarsource.sonarlint.core.container.storage.StorageContainerHandler;
@@ -71,7 +72,7 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
   private final ReadWriteLock rwl = new ReentrantReadWriteLock();
   private final List<StateListener> stateListeners = new CopyOnWriteArrayList<>();
   private volatile State state = State.UNKNOWN;
-  private LogOutput logOutput;
+  private final LogOutput logOutput;
 
   public ConnectedSonarLintEngineImpl(ConnectedGlobalConfiguration globalConfig) {
     this.globalConfig = globalConfig;
@@ -151,7 +152,14 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
     return withReadLock(() -> {
       try {
         setLogging(logOutput);
-        return getHandler().analyze(storageContainer.getModuleContainers().getContainerFor(configuration.moduleKey()), configuration, issueListener, new ProgressWrapper(monitor));
+        Object moduleKey = configuration.moduleKey();
+        ComponentContainer moduleContainer = storageContainer.getModuleContainers().getContainerFor(moduleKey);
+        if (moduleContainer == null) {
+          // if not found, means we are outside of any module (e.g. single file analysis on VSCode)
+          // we should create a single use module for the analysis and drop it just after ?
+          moduleContainer = storageContainer.getModuleContainers().createContainer(new ModuleInfo(moduleKey, (a, b, c) -> {}));
+        }
+        return getHandler().analyze(moduleContainer, configuration, issueListener, new ProgressWrapper(monitor));
       } catch (RuntimeException e) {
         throw SonarLintWrappedException.wrap(e);
       }
@@ -204,9 +212,9 @@ public final class ConnectedSonarLintEngineImpl implements ConnectedSonarLintEng
   }
 
   @Override
-  public void moduleDeleted(ModuleInfo module) {
+  public void moduleDeleted(Object moduleKey) {
     if (getGlobalContainer() != null) {
-      getGlobalContainer().getModuleContainers().stopContainer(module);
+      getGlobalContainer().getModuleContainers().stopContainer(moduleKey);
     }
   }
 

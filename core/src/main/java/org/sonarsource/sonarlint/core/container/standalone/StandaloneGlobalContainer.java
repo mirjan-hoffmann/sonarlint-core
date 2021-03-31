@@ -36,6 +36,7 @@ import org.sonar.api.utils.log.Loggers;
 import org.sonarsource.sonarlint.core.NodeJsHelper;
 import org.sonarsource.sonarlint.core.analyzer.sensor.SensorsExecutor;
 import org.sonarsource.sonarlint.core.client.api.common.ClientFileWalker;
+import org.sonarsource.sonarlint.core.client.api.common.ModuleInfo;
 import org.sonarsource.sonarlint.core.client.api.common.PluginDetails;
 import org.sonarsource.sonarlint.core.client.api.common.RuleKey;
 import org.sonarsource.sonarlint.core.client.api.common.analysis.AnalysisResults;
@@ -150,6 +151,11 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     Object moduleKey = configuration.moduleKey();
     LOG.info("Getting module container for key=" + moduleKey);
     ComponentContainer container = moduleContainers.getContainerFor(moduleKey);
+    if (container == null) {
+      // if not found, means we are outside of any module (e.g. single file analysis on VSCode)
+      // we should create a single use module for the analysis and drop it just after ?
+      container = moduleContainers.createContainer(new ModuleInfo(moduleKey, (a, b, c) -> {}));
+    }
     LOG.info("Container is " + container);
     AnalysisContainer analysisContainer = new AnalysisContainer(container, progress);
     analysisContainer.add(configuration);

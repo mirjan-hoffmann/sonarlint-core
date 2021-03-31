@@ -118,7 +118,7 @@ public class ConnectedIssueExclusionsMediumTest {
       .setStorageRoot(tmpStorage)
       .setLogOutput(createNoOpLogOutput())
       .addEnabledLanguage(Language.JAVA)
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .build();
     sonarlint = new ConnectedSonarLintEngineImpl(config);
     storagePaths = sonarlint.getGlobalContainer().getComponentByType(StoragePaths.class);
@@ -313,6 +313,7 @@ public class ConnectedIssueExclusionsMediumTest {
       ConnectedAnalysisConfiguration.builder()
         .setProjectKey(JAVA_MODULE_KEY)
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFiles(inputFile1, inputFile2)
         .build(),
       new StoreIssueListener(issues), null, null);

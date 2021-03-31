@@ -123,7 +123,7 @@ class StandaloneIssueMediumTests {
       .addEnabledLanguages(Language.JS, Language.JAVA, Language.PHP, Language.PYTHON, Language.TS, Language.C, Language.XOO)
       .setSonarLintUserHome(sonarlintUserHome)
       .setNodeJs(nodeJsHelper.getNodeJsPath(), nodeJsHelper.getNodeJsVersion())
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .setExtraProperties(extraProperties);
 
     if (COMMERCIAL_ENABLED) {
@@ -162,6 +162,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null,
@@ -175,6 +176,7 @@ class StandaloneIssueMediumTests {
     issues.clear();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add, null,
       null);
@@ -193,6 +195,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addIncludedRule(RuleKey.parse("javascript:S3827"))
         .build(),
@@ -207,6 +210,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .putExtraProperty("sonar.javascript.globals", "LOCAL1")
         .addIncludedRule(RuleKey.parse("javascript:S3827"))
@@ -237,6 +241,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add, null,
       null);
@@ -256,6 +261,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null, null);
@@ -276,6 +282,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null, null);
@@ -315,6 +322,7 @@ class StandaloneIssueMediumTests {
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
         .addInputFile(inputFile)
+        .setModuleKey("key")
         .putExtraProperty("sonar.cfamily.build-wrapper-content", buildWrapperContent)
         .build(),
       issues::add, (m, l) -> System.out.println(m), null);
@@ -336,6 +344,7 @@ class StandaloneIssueMediumTests {
     AnalysisResults results = sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null, null);
@@ -355,6 +364,7 @@ class StandaloneIssueMediumTests {
     AnalysisResults results = sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null, null);
@@ -374,6 +384,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -392,6 +403,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -413,6 +425,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -435,6 +448,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -488,6 +502,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addIncludedRule(new RuleKey("java", "S1313"))
         .build(),
@@ -512,6 +527,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -536,6 +552,7 @@ class StandaloneIssueMediumTests {
     final List<Issue> issues = new ArrayList<>();
     sonarlint.analyze(StandaloneAnalysisConfiguration.builder()
       .setBaseDir(baseDir.toPath())
+      .setModuleKey("key")
       .addInputFile(inputFile)
       .build(), issues::add,
       null, null);
@@ -554,6 +571,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(projectWithByteCode)
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .putExtraProperty("sonar.java.binaries", projectWithByteCode.resolve("bin").toString())
         .build(),
@@ -582,6 +600,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addExcludedRules(excludedRules)
         .build(),
@@ -609,6 +628,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addExcludedRules(excludedRules)
         .build(),
@@ -638,6 +658,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addIncludedRules(includedRules)
         .build(),
@@ -668,6 +689,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addIncludedRules(includedRules)
         .build(),
@@ -695,6 +717,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addIncludedRules(includedRules)
         .build(),
@@ -724,6 +747,7 @@ class StandaloneIssueMediumTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .addExcludedRules(excludedRules)
         .addIncludedRules(includedRules)
@@ -766,6 +790,7 @@ class StandaloneIssueMediumTests {
     AnalysisResults results = sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFiles(inputFile, inputFileTest)
         .putExtraProperty("sonar.junit.reportsPath", "reports/")
         .build(),
@@ -802,6 +827,7 @@ class StandaloneIssueMediumTests {
       Runnable worker = () -> sonarlint.analyze(
         StandaloneAnalysisConfiguration.builder()
           .setBaseDir(baseDir.toPath())
+          .setModuleKey("key")
           .addInputFile(inputFile)
           .build(),
         issue -> {
@@ -842,6 +868,7 @@ class StandaloneIssueMediumTests {
     AnalysisResults analysisResults = sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir.toPath())
+        .setModuleKey("key")
         .addInputFiles(inputFile1, inputFile2)
         .build(),
       issues::add,

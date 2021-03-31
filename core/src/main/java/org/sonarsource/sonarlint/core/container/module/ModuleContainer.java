@@ -21,6 +21,8 @@ package org.sonarsource.sonarlint.core.container.module;
 
 import org.sonarsource.api.sonarlint.SonarLintSide;
 import org.sonarsource.sonarlint.core.container.ComponentContainer;
+import org.sonarsource.sonarlint.core.container.analysis.filesystem.FileMetadata;
+import org.sonarsource.sonarlint.core.container.analysis.filesystem.LanguageDetection;
 import org.sonarsource.sonarlint.core.container.global.ExtensionInstaller;
 
 public class ModuleContainer extends ComponentContainer {
@@ -31,6 +33,12 @@ public class ModuleContainer extends ComponentContainer {
 
   @Override
   protected void doBeforeStart() {
+    add(
+      SonarLintFileWalker.class,
+      ModuleInputFileBuilder.class,
+      FileMetadata.class,
+      LanguageDetection.class
+    );
     getComponentByType(ExtensionInstaller.class).install(this, SonarLintSide.Scope.MODULE);
   }
 }

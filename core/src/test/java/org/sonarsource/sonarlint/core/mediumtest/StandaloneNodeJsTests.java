@@ -21,7 +21,6 @@ package org.sonarsource.sonarlint.core.mediumtest;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -99,7 +98,7 @@ class StandaloneNodeJsTests {
       .addEnabledLanguages(Language.JS, Language.TS)
       .setSonarLintUserHome(sonarlintUserHome)
       .setNodeJs(Paths.get("wrong"), Version.create("12.0"))
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .setLogOutput((msg, level) -> logs.add(msg));
 
     sonarlint = new StandaloneSonarLintEngineImpl(configBuilder.build());
@@ -125,7 +124,7 @@ class StandaloneNodeJsTests {
       .addEnabledLanguages(Language.JS, Language.TS)
       .setSonarLintUserHome(sonarlintUserHome)
       .setNodeJs(Paths.get("node"), Version.create("1.0"))
-      .setModulesProvider(() -> singletonList(new ModuleInfo("key", URI.create("/uri"), mock(ClientFileWalker.class))))
+      .setModulesProvider(() -> singletonList(new ModuleInfo("key", mock(ClientFileWalker.class))))
       .setLogOutput((msg, level) -> logs.add(msg));
 
     sonarlint = new StandaloneSonarLintEngineImpl(configBuilder.build());
@@ -156,6 +155,7 @@ class StandaloneNodeJsTests {
     sonarlint.analyze(
       StandaloneAnalysisConfiguration.builder()
         .setBaseDir(baseDir)
+        .setModuleKey("key")
         .addInputFile(inputFile)
         .build(),
       issues::add, null,
