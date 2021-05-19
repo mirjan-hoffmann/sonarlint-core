@@ -46,6 +46,7 @@ import org.sonarsource.sonarlint.core.container.ComponentContainer;
 import org.sonarsource.sonarlint.core.container.analysis.AnalysisContainer;
 import org.sonarsource.sonarlint.core.container.connected.validate.PluginVersionChecker;
 import org.sonarsource.sonarlint.core.container.global.ExtensionInstaller;
+import org.sonarsource.sonarlint.core.container.global.GlobalConfigurationMonitor;
 import org.sonarsource.sonarlint.core.container.global.GlobalConfigurationProvider;
 import org.sonarsource.sonarlint.core.container.global.GlobalExtensionContainer;
 import org.sonarsource.sonarlint.core.container.global.GlobalSettings;
@@ -85,6 +86,7 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     Version sonarlintPluginApiVersion = MetadataLoader.loadSonarLintPluginApiVersion();
 
     add(
+      GlobalConfigurationMonitor.class,
       StandalonePluginIndex.class,
       PluginRepository.class,
       PluginVersionChecker.class,
@@ -143,6 +145,10 @@ public class StandaloneGlobalContainer extends ComponentContainer {
     container.execute();
     rules = container.getRules();
     standaloneActiveRules = container.getStandaloneActiveRules();
+  }
+
+  public void notifyPropertyChange(String propertyKey, String newPropertyValue) {
+    globalExtensionContainer.notifyPropertyChange(propertyKey, newPropertyValue);
   }
 
   public AnalysisResults analyze(StandaloneAnalysisConfiguration configuration, IssueListener issueListener, ProgressWrapper progress) {

@@ -19,25 +19,27 @@
  */
 package org.sonarsource.sonarlint.core.container.global;
 
-import org.sonarsource.sonarlint.core.container.ComponentContainer;
-import org.sonarsource.sonarlint.core.container.ContainerLifespan;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import org.sonarsource.sonarlint.plugin.api.ConfigurationMonitor;
 
-/**
- * Used to load plugin global extensions
- */
-public class GlobalExtensionContainer extends ComponentContainer {
-
-  public GlobalExtensionContainer(ComponentContainer parent) {
-    super(parent);
-  }
+public class GlobalConfigurationMonitor implements ConfigurationMonitor {
+  private final Map<String, List<Consumer<String>>> monitoredKeysByConsumer = new HashMap<>();
 
   @Override
-  protected void doBeforeStart() {
-    getComponentByType(ExtensionInstaller.class).install(this, ContainerLifespan.ENGINE);
+  public void register(String propertyKey, Consumer<String> propertyValueConsumer) {
+    List<Consumer<String>> consumers = monitoredKeysByConsumer.getOrDefault(propertyKey, new ArrayList<>());
+    consumers.add(propertyValueConsumer);
+    monitoredKeysByConsumer.put(propertyKey, consumers);
   }
 
-  public void notifyPropertyChange(String propertyKey, String newPropertyValue) {
-    getComponentByType(GlobalConfigurationMonitor.class).notify(propertyKey, newPropertyValue);
+  public void notify(String propertyKey, String newValue) {
+    if (monitoredKeysByConsumer.containsKey(propertyKey)) {
+      monitoredKeysByConsumer.get(propertyKey).forEach(stringConsumer -> stringConsumer.accept(newValue));
+    }
+    // should also notify every m
   }
-
 }

@@ -217,6 +217,11 @@ public final class ConnectedSonarLintEngineImpl extends AbstractSonarLintEngine 
   }
 
   @Override
+  public void firePropertyChangedEvent(String propertyKey, String newPropertyValue) {
+    getGlobalContainer().notifyPropertyChange(propertyKey, newPropertyValue);
+  }
+
+  @Override
   public StorageUpdateCheckResult checkIfGlobalStorageNeedUpdate(EndpointParams endpoint, HttpClient client, @Nullable ProgressMonitor monitor) {
     requireNonNull(endpoint);
     return withReadLock(() -> runInConnectedContainer(endpoint, client, container -> container.checkForUpdate(new ProgressWrapper(monitor))));

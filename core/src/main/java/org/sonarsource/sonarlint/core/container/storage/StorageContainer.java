@@ -214,4 +214,8 @@ public class StorageContainer extends ComponentContainer {
     ActiveRule readActiveRuleFromStorage = getHandler().readActiveRuleFromStorage(ruleKeyStr, projectKey);
     return getRuleDetailsWithSeverity(ruleKeyStr, readActiveRuleFromStorage.getSeverity());
   }
+
+  public void notifyPropertyChange(String propertyKey, String newPropertyValue) {
+    globalExtensionContainer.notifyPropertyChange(propertyKey, newPropertyValue);
+  }
 }

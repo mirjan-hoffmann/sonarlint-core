@@ -37,4 +37,8 @@ public interface SonarLintEngine {
   void stopModule(Object moduleKey);
 
   void fireModuleFileEvent(Object moduleKey, ClientModuleFileEvent event);
+
+  void firePropertyChangedEvent(String propertyKey, String newPropertyValue);
+
+  void firePropertyChangedEvent(Object moduleKey, String propertyKey, String newPropertyValue);
 }

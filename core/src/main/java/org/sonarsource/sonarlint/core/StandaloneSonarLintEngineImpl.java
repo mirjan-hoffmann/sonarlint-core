@@ -137,4 +137,9 @@ public final class StandaloneSonarLintEngineImpl extends AbstractSonarLintEngine
     }
   }
 
+  @Override
+  public void firePropertyChangedEvent(String propertyKey, String newPropertyValue) {
+    getGlobalContainer().notifyPropertyChange(propertyKey, newPropertyValue);
+  }
+
 }

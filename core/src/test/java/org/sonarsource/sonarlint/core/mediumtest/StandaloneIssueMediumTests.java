@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.io.FileUtils;
@@ -48,6 +49,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonarsource.sonarlint.core.NodeJsHelper;
 import org.sonarsource.sonarlint.core.OnDiskTestClientInputFile;
 import org.sonarsource.sonarlint.core.StandaloneSonarLintEngineImpl;
@@ -64,6 +66,8 @@ import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneAnalysisCo
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneGlobalConfiguration;
 import org.sonarsource.sonarlint.core.client.api.standalone.StandaloneRuleDetails;
 import org.sonarsource.sonarlint.core.container.ComponentContainer;
+import org.sonarsource.sonarlint.core.container.global.GlobalConfigurationMonitor;
+import org.sonarsource.sonarlint.core.container.global.GlobalExtensionContainer;
 import org.sonarsource.sonarlint.core.container.module.SonarLintModuleFileSystem;
 import org.sonarsource.sonarlint.core.util.PluginLocator;
 
@@ -74,7 +78,9 @@ import static org.assertj.core.api.Assertions.entry;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class StandaloneIssueMediumTests {
 
@@ -144,7 +150,8 @@ class StandaloneIssueMediumTests {
 
   @Test
   void simpleJavaScript() throws Exception {
-
+    sonarlint.declareModule(new ModuleInfo("key", (language, type) -> Stream.empty()));
+    sonarlint.firePropertyChangedEvent("prop.key", "vvallllll");
     StandaloneRuleDetails ruleDetails = sonarlint.getRuleDetails("javascript:S1481").get();
     assertThat(ruleDetails.getName()).isEqualTo("Unused local variables and functions should be removed");
     assertThat(ruleDetails.getLanguage()).isEqualTo(Language.JS);
@@ -874,6 +881,16 @@ class StandaloneIssueMediumTests {
     sonarlint.stopModule("key");
 
     assertThat(moduleContainer.getPicoContainer().getLifecycleState().isStarted()).isFalse();
+  }
+
+  @Test
+  void should_notify_registered_consumers_when_a_property_changes() {
+    Consumer<String> consumer = mock(Consumer.class);
+    sonarlint.getGlobalContainer().getComponentByType(GlobalConfigurationMonitor.class).register("property.key", consumer);
+
+    sonarlint.firePropertyChangedEvent("property.key", "new_value");
+
+    verify(consumer).accept(eq("new_value"));
   }
 
   @Test

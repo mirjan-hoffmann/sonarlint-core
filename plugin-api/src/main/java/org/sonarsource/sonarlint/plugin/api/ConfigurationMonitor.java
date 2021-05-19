@@ -1,5 +1,5 @@
 /*
- * SonarLint Core - Implementation
+ * SonarLint Plugin API
  * Copyright (C) 2016-2021 SonarSource SA
  * mailto:info AT sonarsource DOT com
  *
@@ -17,27 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonarsource.sonarlint.core.container.global;
+package org.sonarsource.sonarlint.plugin.api;
 
-import org.sonarsource.sonarlint.core.container.ComponentContainer;
-import org.sonarsource.sonarlint.core.container.ContainerLifespan;
+import java.util.function.Consumer;
 
 /**
- * Used to load plugin global extensions
+ * @since 6.0
  */
-public class GlobalExtensionContainer extends ComponentContainer {
-
-  public GlobalExtensionContainer(ComponentContainer parent) {
-    super(parent);
-  }
-
-  @Override
-  protected void doBeforeStart() {
-    getComponentByType(ExtensionInstaller.class).install(this, ContainerLifespan.ENGINE);
-  }
-
-  public void notifyPropertyChange(String propertyKey, String newPropertyValue) {
-    getComponentByType(GlobalConfigurationMonitor.class).notify(propertyKey, newPropertyValue);
-  }
-
+public interface ConfigurationMonitor {
+  /**
+   *
+   * @since 6.0
+   * @param propertyKey the key of the property to monitor
+   * @param propertyValueConsumer consumer called when the value of the property changes
+   */
+  void register(String propertyKey, Consumer<String> propertyValueConsumer);
 }

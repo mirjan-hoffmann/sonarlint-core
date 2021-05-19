@@ -25,6 +25,7 @@ import org.sonarsource.sonarlint.core.container.ContainerLifespan;
 import org.sonarsource.sonarlint.core.container.analysis.filesystem.FileMetadata;
 import org.sonarsource.sonarlint.core.container.analysis.filesystem.LanguageDetection;
 import org.sonarsource.sonarlint.core.container.global.ExtensionInstaller;
+import org.sonarsource.sonarlint.core.container.global.GlobalConfigurationMonitor;
 
 public class ModuleContainer extends ComponentContainer {
 
@@ -40,7 +41,8 @@ public class ModuleContainer extends ComponentContainer {
       FileMetadata.class,
       LanguageDetection.class,
 
-      ModuleFileEventNotifier.class
+      ModuleFileEventNotifier.class,
+      GlobalConfigurationMonitor.class
     );
     getComponentByType(ExtensionInstaller.class).install(this, ContainerLifespan.MODULE);
   }
