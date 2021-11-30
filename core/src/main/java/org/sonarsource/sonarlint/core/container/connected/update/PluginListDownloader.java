@@ -51,6 +51,7 @@ public class PluginListDownloader {
     this.pluginVersionChecker = pluginVersionChecker;
 
     this.enabledLanguages = globalConfiguration.getEnabledLanguages();
+    enabledLanguages.add(Language.MARKDOWN);
   }
 
   public List<SonarAnalyzer> downloadPluginList() {
@@ -64,7 +65,9 @@ public class PluginListDownloader {
   }
 
   private SonarAnalyzer toSonarAnalyzer(InstalledPlugin plugin) {
+    //LOG.info("Going for plugin {}", plugin.key);
     boolean sonarlintCompatible = (!isKnownSonarSourceAnalyzer(plugin.key) || providesAtLeastOneEnabledLanguage(plugin.key)) && plugin.sonarLintSupported;
+    //LOG.info("sonarlintCompatible {}", sonarlintCompatible);
     DefaultSonarAnalyzer sonarAnalyzer = new DefaultSonarAnalyzer(plugin.key, plugin.filename, plugin.hash, sonarlintCompatible);
     checkMinVersion(sonarAnalyzer);
     return sonarAnalyzer;
@@ -88,6 +91,9 @@ public class PluginListDownloader {
     analyzer.minimumVersion(minVersion);
     analyzer.version(VersionUtils.getJarVersion(analyzer.filename()));
     analyzer.versionSupported(pluginVersionChecker.isVersionSupported(analyzer.key(), analyzer.version()));
+    //LOG.info("minVersion {}", minVersion);
+    //LOG.info("version {}", VersionUtils.getJarVersion(analyzer.filename()));
+    //LOG.info("versionSupported {}", pluginVersionChecker.isVersionSupported(analyzer.key(), analyzer.version()));
   }
 
   private static class InstalledPlugins {
